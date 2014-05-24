@@ -148,7 +148,9 @@ std::list<std::string>* EnumBase::getAllNames() {
     }
     return strg;
 }
-
+//
+//Roka - We can only use SHA-256 and 384.
+//       http://www.nsa.gov/ia/programs/suiteb_cryptography/
 
 /**
  * Set up the enumeration list for available hash algorithms
@@ -156,11 +158,17 @@ std::list<std::string>* EnumBase::getAllNames() {
 HashEnum::HashEnum() : EnumBase(HashAlgorithm) {
     insert(s256, 0, "SHA-256", NULL, NULL, None);
     insert(s384, 0, "SHA-384", NULL, NULL, None);
-    insert(skn2, 0, "Skein-256", NULL, NULL, None);
-    insert(skn3, 0, "Skein-384", NULL, NULL, None);
+    //insert(skn2, 0, "Skein-256", NULL, NULL, None);
+    //insert(skn3, 0, "Skein-384", NULL, NULL, None);
 }
 
 HashEnum::~HashEnum() {}
+
+//Roka - We can only use AES in Counter Mode for symmetric cipher
+//       to be SuiteB compliant both 128 and 256 bit keys are
+//       acceptable
+//       http://www.nsa.gov/ia/programs/suiteb_cryptography/
+
 
 /**
  * Set up the enumeration list for available symmetric cipher algorithms
@@ -168,24 +176,30 @@ HashEnum::~HashEnum() {}
 SymCipherEnum::SymCipherEnum() : EnumBase(CipherAlgorithm) {
     insert(aes3, 32, "AES-256", aesCfbEncrypt, aesCfbDecrypt, Aes);
     insert(aes1, 16, "AES-128", aesCfbEncrypt, aesCfbDecrypt, Aes);
-    insert(two3, 32, "Twofish-256", twoCfbEncrypt, twoCfbDecrypt, TwoFish);
-    insert(two1, 16, "TwoFish-128", twoCfbEncrypt, twoCfbDecrypt, TwoFish);
+   // insert(two3, 32, "Twofish-256", twoCfbEncrypt, twoCfbDecrypt, TwoFish);
+   // insert(two1, 16, "TwoFish-128", twoCfbEncrypt, twoCfbDecrypt, TwoFish);
 }
 
 SymCipherEnum::~SymCipherEnum() {}
+
+//Roka - We can only use Diffiel Helman Elliptical Curve for public
+//       key with 256 and 384 bit curves to match SuiteB
+//
+//       http://www.nsa.gov/ia/programs/suiteb_cryptography/
+
 
 /**
  * Set up the enumeration list for available public key algorithms
  */
 PubKeyEnum::PubKeyEnum() : EnumBase(PubKeyAlgorithm) {
-    insert(dh2k, 0, "DH-2048", NULL, NULL, None);
+    //insert(dh2k, 0, "DH-2048", NULL, NULL, None);
     insert(ec25, 0, "NIST ECDH-256", NULL, NULL, None);
-    insert(dh3k, 0, "DH-3072", NULL, NULL, None);
+    //insert(dh3k, 0, "DH-3072", NULL, NULL, None);
     insert(ec38, 0, "NIST ECDH-384", NULL, NULL, None);
-    insert(mult, 0, "Multi-stream",  NULL, NULL, None);
+    //insert(mult, 0, "Multi-stream",  NULL, NULL, None);
 #ifdef SUPPORT_NON_NIST
-    insert(e255, 0, "ECDH-255", NULL, NULL, None);
-    insert(e414, 0, "ECDH-414", NULL, NULL, None);
+    //insert(e255, 0, "ECDH-255", NULL, NULL, None);
+    //insert(e414, 0, "ECDH-414", NULL, NULL, None);
 #endif
 }
 
@@ -200,6 +214,9 @@ SasTypeEnum::SasTypeEnum() : EnumBase(SasType) {
 }
 
 SasTypeEnum::~SasTypeEnum() {}
+
+//Roka - Nothing is explicitly said about this in the SuiteB spec, we
+//       leave it as is for now
 
 /**
  * Set up the enumeration list for available SRTP authentications
@@ -230,22 +247,27 @@ selectionPolicy(Standard){}
 
 ZrtpConfigure::~ZrtpConfigure() {}
 
+//Roka - once again we remove everything but the suite-B compliant
+//algorithms we use http://www.nsa.gov/ia/programs/suiteb_cryptography/
+//on 2013-11-07 as our guideline
+//
+//
 void ZrtpConfigure::setStandardConfig() {
     clear();
 
     addAlgo(HashAlgorithm, zrtpHashes.getByName(s384));
     addAlgo(HashAlgorithm, zrtpHashes.getByName(s256));
 
-    addAlgo(CipherAlgorithm, zrtpSymCiphers.getByName(two3));
+   // addAlgo(CipherAlgorithm, zrtpSymCiphers.getByName(two3));
     addAlgo(CipherAlgorithm, zrtpSymCiphers.getByName(aes3));
-    addAlgo(CipherAlgorithm, zrtpSymCiphers.getByName(two1));
+   // addAlgo(CipherAlgorithm, zrtpSymCiphers.getByName(two1));
     addAlgo(CipherAlgorithm, zrtpSymCiphers.getByName(aes1));
 
     addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(ec25));
-    addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(dh3k));
+   // addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(dh3k));
     addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(ec38));
-    addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(dh2k));
-    addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(mult));
+    //addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(dh2k));
+    //addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(mult));
 
     addAlgo(SasType, zrtpSasTypes.getByName(b32));
 
@@ -262,8 +284,9 @@ void ZrtpConfigure::setMandatoryOnly() {
 
     addAlgo(CipherAlgorithm, zrtpSymCiphers.getByName(aes1));
 
-    addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(dh3k));
-    addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(mult));
+    addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(ec25));
+    //addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(dh3k));
+    //addAlgo(PubKeyAlgorithm, zrtpPubKeys.getByName(mult));
 
     addAlgo(SasType, zrtpSasTypes.getByName(b32));
 

@@ -90,6 +90,8 @@ ZRtp::ZRtp(uint8_t *myZid, ZrtpCallback *cb, std::string id, ZrtpConfigure* conf
     hashFunctionImpl = sha256;
     hashListFunctionImpl = sha256;
 
+  //Mike - using sha256, correct for SuiteB
+
     hmacFunctionImpl = hmac_sha256;
     hmacListFunctionImpl = hmac_sha256;
 
